@@ -53,8 +53,6 @@ def populate_midi_track_from_data(mt, data):
 
 # duration, pitch, velocity
 data = []
-#[[1024, 60, 90], [1024, 50, 70], [1024, 51, 120],[1024, 62, 80], ]
-last_note = []
 for i in range(1024): # should be 1024
     note = [1024, 0, 0]
     e = random.random()
@@ -69,9 +67,6 @@ for i in range(1024): # should be 1024
         # rest
         note[2] = 0
         data.append(note)
-
-    last_note = note
-
 
 populate_midi_track_from_data(mt, data)
 print(mt)
