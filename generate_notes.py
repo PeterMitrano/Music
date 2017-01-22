@@ -99,6 +99,7 @@ measures = 8
 num_beats = measures * beats_per_measure
 chord_idx = 0
 beat_idx = 1
+last_real_pitch = 59
 
 # note array is ordered [duration, pitch, velocity]
 for i in range(1, num_beats):
@@ -127,14 +128,26 @@ for i in range(1, num_beats):
         note[0] = 256  # 256 is 16th note
 
         if random.random() < 0.05:  # totally random note
-            note[1] = random.randint(30, 90)
+            while True:
+                pitch = random.randint(30, 90)
+                note[1] = pitch
+                pitch_distance = abs(last_real_pitch - pitch)
+                if pitch_distance < 10:
+                    break
         else:
-            # pick note from chord
-            rand_idx = random.randint(0, len(current_chord['pitches']))
-            pitch = current_chord['pitches'][rand_idx]
-            note[1] = pitch
+            # pick random notes until we find one close enough to our last note
+            # because large register changes sound weird
+            while True:
+                # pick note from chord
+                rand_idx = random.randint(0, len(current_chord['pitches']))
+                pitch = current_chord['pitches'][rand_idx]
+                note[1] = pitch
+                pitch_distance = abs(last_real_pitch - pitch)
+                if pitch_distance < 10:
+                    break
 
         note[2] = random.randint(20, 127)
+        last_real_pitch = note[1]
         data.append(note)
 
     # change chords
@@ -142,6 +155,8 @@ for i in range(1, num_beats):
     if beat_idx == current_chord['beats']:
         beat_idx = 0
         chord_idx = (chord_idx + 1) % len(chords)
+
+    print(i, ' out of ', num_beats)
 
 print(data)
 populate_midi_track_from_data(mt, data)
