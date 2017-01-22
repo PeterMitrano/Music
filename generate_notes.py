@@ -1,4 +1,4 @@
-import random
+from numpy import random
 from music21 import midi
 
 mt = midi.MidiTrack(1)
@@ -52,22 +52,32 @@ def populate_midi_track_from_data(mt, data):
 
 
 # duration, pitch, velocity
-data = [[1024, 60, 90], [1024, 50, 70], [1024, 51, 120],[1024, 62, 80], ]
-# for i in range(10): # should be 1024
-#     e = random.random()
-#     if e < 0.45:
-#         # new note
-#     elif e < 0.80:
-#         # rest
-#     else:
-#         # sustain
-#
+data = []
+#[[1024, 60, 90], [1024, 50, 70], [1024, 51, 120],[1024, 62, 80], ]
+last_note = []
+for i in range(1024): # should be 1024
+    note = [1024, 0, 0]
+    e = random.random()
+    if e < 0.75:
+        # new note
+        duration = abs(int(random.randn() + 2))
+        note[0] = duration * 1024
+        note[1] = random.randint(30,90)
+        note[2] = random.randint(20, 127)
+        data.append(note)
+    else:
+        # rest
+        note[2] = 0
+        data.append(note)
+
+    last_note = note
+
 
 populate_midi_track_from_data(mt, data)
 print(mt)
 
 mf = midi.MidiFile()
-mf.ticksPerQuarterNote = 1024 # cannot use: 10080
+mf.ticksPerQuarterNote = 1024 #  magic number?
 mf.tracks.append(mt)
 
 mf.open('comp1 Project/out.mid', 'wb')
