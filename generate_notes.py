@@ -1,6 +1,5 @@
 from numpy import random
 from music21 import midi
-from music21.midi import translate
 
 mt = midi.MidiTrack(1)
 
@@ -66,27 +65,22 @@ chords = [
                              70, 73, 77, 80
                              ]}, # B flat minor 7 / D flat
     {'beats': 16, 'pitches': [
-                             32, 35, 39, 42,
-                             44, 47, 41, 44,
-                             56, 59, 63, 66,
-                             68, 71, 75, 78,
-                             80, 83, 87, 90
+                             32, 35, 39,
+                             44, 47, 41,
+                             56, 59, 63,
+                             68, 71, 75,
                              ]}, # A flat minor 7
     {'beats': 8, 'pitches': [
-                             25, 29, 32,
                              37, 41, 44,
                              49, 53, 55,
                              61, 65, 68,
                              73, 77, 80,
-                             85, 89, 92
                              ]}, # D flat major
     {'beats': 8, 'pitches': [
-                             24, 27, 33,
                              36, 39, 45,
                              48, 51, 57,
                              60, 63, 69,
                              72, 75, 81,
-                             84, 87, 93
                              ]}, # E flat diminished 7 ??? not sure
 ]
 
@@ -95,7 +89,7 @@ data = [[256, 59, 100]] # one start note
 total_duration = 0
 
 beats_per_measure = 64
-measures = 8
+measures = 16
 num_beats = measures * beats_per_measure
 chord_idx = 0
 beat_idx = 1
@@ -127,23 +121,28 @@ for i in range(1, num_beats):
         # new note
         note[0] = 256  # 256 is 16th note
 
-        if random.random() < 0.05:  # totally random note
-            while True:
+        e2 = random.random()
+        if e2 < 0.02:  # totally random note
+            for i in range(20):
                 pitch = random.randint(30, 90)
                 note[1] = pitch
                 pitch_distance = abs(last_real_pitch - pitch)
-                if pitch_distance < 10:
+                if pitch_distance < 6:
                     break
+        elif e2 < 0.06:
+            note[1] = last_real_pitch - 1
+        elif e2 < 0.10:
+            note[1] = last_real_pitch + 1
         else:
             # pick random notes until we find one close enough to our last note
             # because large register changes sound weird
-            while True:
+            for i in range(100):
                 # pick note from chord
                 rand_idx = random.randint(0, len(current_chord['pitches']))
                 pitch = current_chord['pitches'][rand_idx]
                 note[1] = pitch
                 pitch_distance = abs(last_real_pitch - pitch)
-                if pitch_distance < 10:
+                if pitch_distance < 6:
                     break
 
         note[2] = random.randint(20, 127)
@@ -165,10 +164,7 @@ mf = midi.MidiFile()
 mf.ticksPerQuarterNote = 1024 #  magic number?
 mf.tracks.append(mt)
 
-mf.open('comp1 Project/out.mid', 'wb')
+mf.open('comp1 Project/melody.mid', 'wb')
 mf.write()
 mf.close()
 
-# translate and show
-# s = translate.midiFileToStream(mf)
-# s.show()
