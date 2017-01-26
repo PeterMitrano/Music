@@ -1,7 +1,6 @@
 from numpy import random
 from music21 import midi
 
-mt = midi.MidiTrack(1)
 
 def populate_midi_track_from_data(mt, data):
     t = 0
@@ -49,6 +48,8 @@ def populate_midi_track_from_data(mt, data):
     mt.events.append(me)
 
     return mt
+
+mt = midi.MidiTrack(1)
 
 # describe the chord progression
 chords = [
